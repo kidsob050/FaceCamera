@@ -8,14 +8,12 @@
 
 /* Begin PBXBuildFile section */
 		CE1560F42CFD7EB4006F60DC /* FaceCameraApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1560F32CFD7EB4006F60DC /* FaceCameraApp.swift */; };
-		CE1560F62CFD7EB4006F60DC /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1560F52CFD7EB4006F60DC /* ContentView.swift */; };
 		CE1560F82CFD7EB7006F60DC /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CE1560F72CFD7EB7006F60DC /* Assets.xcassets */; };
 		CE1560FC2CFD7EB7006F60DC /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = CE1560FB2CFD7EB7006F60DC /* Preview Assets.xcassets */; };
 		CE1561062CFD7EB7006F60DC /* FaceCameraTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1561052CFD7EB7006F60DC /* FaceCameraTests.swift */; };
 		CE1561102CFD7EB7006F60DC /* FaceCameraUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE15610F2CFD7EB7006F60DC /* FaceCameraUITests.swift */; };
 		CE1561122CFD7EB7006F60DC /* FaceCameraUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1561112CFD7EB7006F60DC /* FaceCameraUITestsLaunchTests.swift */; };
 		CE1561212CFDAE79006F60DC /* EmotionClassifier.mlmodel in Sources */ = {isa = PBXBuildFile; fileRef = CE1561202CFDAE79006F60DC /* EmotionClassifier.mlmodel */; };
-		CE1561232CFDB4BE006F60DC /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE1561222CFDB4BE006F60DC /* AppDelegate.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -38,7 +36,6 @@
 /* Begin PBXFileReference section */
 		CE1560F02CFD7EB4006F60DC /* FaceCamera.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FaceCamera.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CE1560F32CFD7EB4006F60DC /* FaceCameraApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceCameraApp.swift; sourceTree = "<group>"; };
-		CE1560F52CFD7EB4006F60DC /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		CE1560F72CFD7EB7006F60DC /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		CE1560F92CFD7EB7006F60DC /* FaceCamera.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FaceCamera.entitlements; sourceTree = "<group>"; };
 		CE1560FB2CFD7EB7006F60DC /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -48,7 +45,6 @@
 		CE15610F2CFD7EB7006F60DC /* FaceCameraUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceCameraUITests.swift; sourceTree = "<group>"; };
 		CE1561112CFD7EB7006F60DC /* FaceCameraUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceCameraUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		CE1561202CFDAE79006F60DC /* EmotionClassifier.mlmodel */ = {isa = PBXFileReference; lastKnownFileType = file.mlmodel; path = EmotionClassifier.mlmodel; sourceTree = "<group>"; };
-		CE1561222CFDB4BE006F60DC /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		CE1561242CFDBA1F006F60DC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -102,10 +98,8 @@
 			children = (
 				CE1561242CFDBA1F006F60DC /* Info.plist */,
 				CE1560F32CFD7EB4006F60DC /* FaceCameraApp.swift */,
-				CE1560F52CFD7EB4006F60DC /* ContentView.swift */,
 				CE1560F72CFD7EB7006F60DC /* Assets.xcassets */,
 				CE1560F92CFD7EB7006F60DC /* FaceCamera.entitlements */,
-				CE1561222CFDB4BE006F60DC /* AppDelegate.swift */,
 				CE1561202CFDAE79006F60DC /* EmotionClassifier.mlmodel */,
 				CE1560FA2CFD7EB7006F60DC /* Preview Content */,
 			);
@@ -267,9 +261,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				CE1561232CFDB4BE006F60DC /* AppDelegate.swift in Sources */,
 				CE1561212CFDAE79006F60DC /* EmotionClassifier.mlmodel in Sources */,
-				CE1560F62CFD7EB4006F60DC /* ContentView.swift in Sources */,
 				CE1560F42CFD7EB4006F60DC /* FaceCameraApp.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -437,14 +429,15 @@
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UIRequiresFullScreen = NO;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.yourname.FaceCamera-";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -477,14 +470,15 @@
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				INFOPLIST_KEY_UIRequiresFullScreen = NO;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
 				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
 				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
 				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
-				MACOSX_DEPLOYMENT_TARGET = 13.3;
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = "com.yourname.FaceCamera-";
 				PRODUCT_NAME = "$(TARGET_NAME)";

@@ -6,142 +6,162 @@
 //
 //
 
-import UIKit
 import SwiftUI
 import AVFoundation
 import Vision
 import CoreML
 
-class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
-    var captureSession: AVCaptureSession!
-    var previewLayer: AVCaptureVideoPreviewLayer!
-    var model: VNCoreMLModel!
-    var emotionLabel: UILabel!
-    var backgroundImageView: UIImageView!
+struct ContentView: View {
+    @State private var captureSession: AVCaptureSession?
+    @State private var model: VNCoreMLModel?
+    @State private var emotion: String = ""
+    @State private var backgroundImage: Image?
+    
+    var body: some View {
+        ZStack {
+            if let backgroundImage = backgroundImage {
+                backgroundImage
+                    .resizable()
+                    .scaledToFill()
+                    .edgesIgnoringSafeArea(.all)
+            } else {
+                Color.gray
+                    .edgesIgnoringSafeArea(.all)
+            }
+            
+            VStack {
+                Text("情緒: \(emotion)")
+                    .font(.largeTitle)
+                    .padding()
+                    .background(Color.black.opacity(0.5))
+                    .cornerRadius(10)
+                    .foregroundColor(.white)
+                    .padding(.top, 40)
+                Spacer()
+                CameraPreviewView(captureSession: $captureSession)
+                    .frame(height: 300)
+                    .cornerRadius(20)
+                    .padding()
+            }
+        }
+        .onAppear {
+            setupCamera()
+            setupModel()
+        }
+    }
+    func setupCamera() {
+        captureSession = AVCaptureSession()
+        captureSession?.sessionPreset = .vga640x480
+        
+        guard let videoCaptureDevice = AVCaptureDevice.default(for: .video) else { return }
+        guard let videoInput = try? AVCaptureDeviceInput(device: videoCaptureDevice),
+              captureSession?.canAddInput(videoInput) == true else {
+            return
+        }
+        captureSession?.addInput(videoInput)
+        
+        let videoOutput = AVCaptureVideoDataOutput()
+        videoOutput.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32BGRA]
+        videoOutput.setSampleBufferDelegate(CamradDelegate { pixelBuffer in processBuffer(pixelBuffer)}, queue: DispatchQueue(label: "videoQueue"))
+        
+        guard captureSession?.canAddOutput(videoOutput) == true else { return }
+        captureSession?.addOutput(videoOutput)
+        
+        captureSession?.startRunning()
+    }
+    
+    func setupModel() {
+        guard let mlModel = try? EmotionClassifier(configuration: MLModelConfiguration()).model else {
+            fatalError("無法加載 ML 模型")
+        }
+        model = try? VNCoreMLModel(for: mlModel)
+    }
+    
+    func processBuffer(_ pixelBuffer: CVPixelBuffer) {
+        guard let model = model else { return }
+        
+        let request = VNCoreMLRequest(model: model) { (request, error) in
+            guard let results = request.results as? [VNClassificationObservation], let firstResult = results.first else { return }
+            
+            DispatchQueue.main.async {
+                self.emotion = firstResult.identifier
+                updateBackground(forEmotion: firstResult.identifier)
+            }
+        }
+        
+        let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, options: [:])
+        try? handler.perform([request])
+    }
+    func updateBackground(forEmotion emotion: String) {
+        switch emotion {
+        case "Happy":
+            backgroundImage = Image("happy") // 使用 Assets 中的圖片
+        case "Angry":
+            backgroundImage = Image("angry") // 使用 Assets 中的圖片
+        case "Sad":
+            backgroundImage = Image("cry") // 使用 Assets 中的圖片
+        default:
+            backgroundImage = nil  // 默認背景色
+        }
+    }
+}
+
+struct CameraPreviewView: UIViewControllerRepresentable {
+    @Binding var captureSession: AVCaptureSession?
+    
+    func makeUIViewController(context: Context) -> CameraPreviewController {
+        let controller = CameraPreviewController()
+        controller.captureSession = captureSession
+        return controller
+    }
+    
+    func updateUIViewController(_ uiViewController: CameraPreviewController, context: Context) {
+        uiViewController.captureSession = captureSession
+    }
+}
+class CameraPreviewController: UIViewController {
+    var captureSession: AVCaptureSession? {
+        didSet {
+            if let sesion = captureSession {
+                previewLayer.session = captureSession
+            }
+        }
+    }
+    
+    private var previewLayer: AVCaptureVideoPreviewLayer!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        setupCamera()
-        setupModel()
-        setupUI()
-        
-        // 創建 SwiftUI 的 ContentView
-        let contentView = ContentView()
-        let hostingController = UIHostingController(rootView: contentView)
-        
-        // 添加為子控制器
-        addChild(hostingController)
-        view.addSubview(hostingController.view)
-        hostingController.view.frame = view.bounds
-        hostingController.didMove(toParent: self)
-    }
-    
-    func setupCamera() {
-        // 初始化相機捕抓會話
-        captureSession = AVCaptureSession()
-        captureSession.sessionPreset = .vga640x480 // 使用較低的解析度以支援舊設備
-        
-        guard let videoCaptureDevice = AVCaptureDevice.default(for: .video) else { return }
-        let videoInput: AVCaptureDeviceInput
-        
-        do {
-            videoInput = try AVCaptureDeviceInput(device: videoCaptureDevice)
-        } catch {
-            print("無法訪問相機： \(error)")
-            return
-        }
-        
-        if (captureSession.canAddInput(videoInput)) {
-            captureSession.addInput(videoInput)
-        } else {
-            print("無法添加相機輸入")
-            return
-        }
-        
-        let videoOutput = AVCaptureVideoDataOutput()
-        videoOutput.videoSettings = [kCVPixelBufferPixelFormatTypeKey as String: kCVPixelFormatType_32ABGR]
-        videoOutput.setSampleBufferDelegate(self, queue: DispatchQueue(label: "videoOueue"))
-        if (captureSession.canAddOutput(videoOutput)) {
-            captureSession.addOutput(videoOutput)
-        } else {
-            print("無法添加視頻輸出")
-            return
-        }
-        
-        previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
-        previewLayer.frame = view.layer.bounds
+        previewLayer = AVCaptureVideoPreviewLayer()
         previewLayer.videoGravity = .resizeAspectFill
         view.layer.addSublayer(previewLayer)
-        
-        captureSession.startRunning()
     }
     
-    func setupModel() {
-        // 加載 ML 模型
-        guard let mlModel = try? EmotionClassifier(configuration: MLModelConfiguration()).model else {
-            fatalError("無法加載 ML 模型")
-        }
-        do {
-            model = try VNCoreMLModel(for: mlModel)
-        } catch {
-            fatalError("無法創建 VNCoreMLModel: \(error)")
-        }
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        previewLayer.frame = view.bounds
     }
+}
+
+class CamradDelegate: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
+    let processBuffer: (CVPixelBuffer) -> Void
     
-    func setupUI() {
-        // 設置背景圖層
-        backgroundImageView = UIImageView(frame: view.bounds)
-        backgroundImageView.contentMode = .scaleAspectFill
-        view.addSubview(backgroundImageView)
-        
-        //設置情緒顯示標籤
-        emotionLabel = UILabel(frame: CGRect(x: 20, y: 40, width: view.frame.width - 40, height: 50))
-        emotionLabel.textColor = .white
-        emotionLabel.font = UIFont.boldSystemFont(ofSize: 24)
-        emotionLabel.textAlignment = .center
-        emotionLabel.backgroundColor = UIColor.black.withAlphaComponent(0.5)
-        emotionLabel.layer.cornerRadius = 10
-        emotionLabel.layer.masksToBounds = true
-        view.addSubview(emotionLabel)
+    init(processBuffer: @escaping (CVPixelBuffer) -> Void) {
+        self.processBuffer = processBuffer
     }
     
     func captureOutput(_ output: AVCaptureOutput, didDrop sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
-        guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else {return}
-        
-        let requestOptions: [VNImageOption: Any] = [:]
-        
-        let request = VNCoreMLRequest(model: model) { (request, error) in
-            guard let results = request.results as? [VNClassificationObservation], let firstResult = results.first else {
-                return
-            }
-            
-            DispatchQueue.main.async {
-                self.emotionLabel.text = "情緒: \(firstResult.identifier)"
-                // 根據情緒變換背景，例如顯示圖庫中的嚮應圖片
-                self.updateBackground(forEmotion: firstResult.identifier)
-            }
-        }
-        
-        let handler = VNImageRequestHandler(cvPixelBuffer: pixelBuffer, options:  requestOptions)
-        do {
-            try handler.perform([request])
-        } catch {
-            print("處理請求時發生錯誤: \(error)")
-        }
+        guard let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) else { return }
+        processBuffer(pixelBuffer)
     }
-    
-    func updateBackground(forEmotion emotion: String) {
-        switch emotion {
-        case "Happy":
-            backgroundImageView.image = UIImage(named: "Happy") // 使用 Assets 中的圖片
-        case "Angry":
-            backgroundImageView.image = UIImage(named: "Angry") // 使用 Assets 中的圖片
-        case "Sad":
-            backgroundImageView.image = UIImage(named: "Sad") // 使用 Assets 中的圖片
-        default:
-            backgroundImageView.image = nil // 默認背景色
-            view.backgroundColor = UIColor.gray // 使用灰色背景
+}
+
+@main
+struct FaceCameraApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
         }
     }
 }
