@@ -108,9 +108,8 @@ struct CameraPreviewView: UIViewControllerRepresentable {
 class CameraPreviewController: UIViewController {
     var captureSession: AVCaptureSession? {
         didSet {
-            if let sesion = captureSession {
-                previewLayer.session = captureSession
-            }
+            guard let previewLayer = previewLayer, let captureSession = captureSession else { return }
+            previewLayer.session = captureSession
         }
     }
     
