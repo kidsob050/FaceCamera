@@ -14,7 +14,6 @@ import CoreML
 struct ContentView: View {
     @State private var captureSession: AVCaptureSession?
     @State private var model: VNCoreMLModel?
-    @State private var emotion: String = ""
     @State private var backgroundImage: Image?
     
     var body: some View {
@@ -29,20 +28,8 @@ struct ContentView: View {
                     .edgesIgnoringSafeArea(.all)
             }
             
-            VStack {
-                Text("情緒: \(emotion)")
-                    .font(.largeTitle)
-                    .padding()
-                    .background(Color.black.opacity(0.5))
-                    .cornerRadius(10)
-                    .foregroundColor(.white)
-                    .padding(.top, 40)
-                Spacer()
-                CameraPreviewView(captureSession: $captureSession)
-                    .frame(height: 300)
-                    .cornerRadius(20)
-                    .padding()
-            }
+            CameraPreviewView(captureSession: $captureSession)
+                .edgesIgnoringSafeArea(.all)
         }
         .onAppear {
             setupCamera()
@@ -55,9 +42,7 @@ struct ContentView: View {
         
         guard let videoCaptureDevice = AVCaptureDevice.default(for: .video) else { return }
         guard let videoInput = try? AVCaptureDeviceInput(device: videoCaptureDevice),
-              captureSession?.canAddInput(videoInput) == true else {
-            return
-        }
+              captureSession?.canAddInput(videoInput) == true else { return }
         captureSession?.addInput(videoInput)
         
         let videoOutput = AVCaptureVideoDataOutput()
@@ -67,7 +52,9 @@ struct ContentView: View {
         guard captureSession?.canAddOutput(videoOutput) == true else { return }
         captureSession?.addOutput(videoOutput)
         
-        captureSession?.startRunning()
+        DispatchQueue.global(qos: .background).async {
+            self.captureSession?.startRunning()
+        }
     }
     
     func setupModel() {
@@ -84,7 +71,6 @@ struct ContentView: View {
             guard let results = request.results as? [VNClassificationObservation], let firstResult = results.first else { return }
             
             DispatchQueue.main.async {
-                self.emotion = firstResult.identifier
                 updateBackground(forEmotion: firstResult.identifier)
             }
         }
