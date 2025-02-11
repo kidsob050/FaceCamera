@@ -11,13 +11,19 @@ import AVFoundation
 import Vision
 import CoreML
 
+class GlobalSettings: ObservableObject {
+    @Published var screenContrast: Double = 50
+}
 
 struct MainView: View {
+    @EnvironmentObject var settings: GlobalSettings
+    
     var body: some View {
         NavigationView {
             ZStack {
                 Color.gray
                     .edgesIgnoringSafeArea(.all)
+                    .brightness((settings.screenContrast - 50) / 100)
                 
                 VStack(spacing: 20) {
                     Text("Face Camera App")
@@ -58,15 +64,27 @@ struct MainView: View {
 }
 
 struct SettingsView: View {
+    @EnvironmentObject var settings: GlobalSettings
+    
     var body: some View {
         ZStack {
             Color.gray
                 .edgesIgnoringSafeArea(.all)
-            
-            Text("設定頁面")
-                .font(.largeTitle)
-                .foregroundColor(.white)
+                .brightness((settings.screenContrast - 50) / 100)
+            VStack {
+                Text("設定頁面")
+                    .font(.largeTitle)
+                    .foregroundColor(.yellow)
+                
+                Slider(value: $settings.screenContrast, in: 0...100, step: 1)
+                    .padding()
+                
+                Text("當前對比度: \(Int(settings.screenContrast))")
+                    .foregroundColor(.green)
+            }
+            .padding()
         }
+        .navigationBarTitle("設定", displayMode: .inline)
     }
 }
 
@@ -74,6 +92,7 @@ struct ContentView: View {
     @State private var captureSession = AVCaptureSession()
     @State private var model: VNCoreMLModel?
     @State private var backgroundImage: Image?
+    @EnvironmentObject var settings: GlobalSettings
 
     var body: some View {
         ZStack {
@@ -82,9 +101,11 @@ struct ContentView: View {
                     .resizable()
                     .scaledToFill()
                     .edgesIgnoringSafeArea(.all)
+                    .brightness((settings.screenContrast - 50) / 100)
             } else {
                 Color.gray
                     .edgesIgnoringSafeArea(.all)
+                    .brightness((settings.screenContrast - 50) / 100)
             }
 
             CameraPreviewView(captureSession: $captureSession)
@@ -195,7 +216,7 @@ struct ContentView: View {
     }
 
     func takePhoto() {
-        print("Photo taken!")
+        print("Photo taken!")// T0D0: 可以在這新增拍照功能
     }
 }
 
@@ -253,9 +274,13 @@ class CameraDelegate: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate {
 
 @main
 struct FaceCameraApp: App {
+    @StateObject var settings = GlobalSettings() // 使用 @StateObject 修飾符將 GlobalSettings 作為全局狀態管理對象
+    
     var body: some Scene {
         WindowGroup {
             MainView()
+                .environmentObject(settings) // 將GlobalSettinfs傳遞給所有子視圖
         }
     }
 }
+
