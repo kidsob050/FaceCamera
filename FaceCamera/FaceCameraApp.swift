@@ -50,7 +50,7 @@ struct MainView: View {
                             .padding()
                             .frame(maxWidth: .infinity)
                             .background(Color.green)
-                            .foregroundColor(.white)
+                            .foregroundColor(.purple)
                             .cornerRadius(10)
                             .padding(.horizontal)
                     }
