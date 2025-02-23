@@ -13,6 +13,7 @@ import CoreML
 
 class GlobalSettings: ObservableObject {
     @Published var screenContrast: Double = 50
+    @Published var isContrastAdjusting: Bool = false
 }
 
 struct MainView: View {
@@ -76,11 +77,28 @@ struct SettingsView: View {
                     .font(.largeTitle)
                     .foregroundColor(.yellow)
                 
-                Slider(value: $settings.screenContrast, in: 0...100, step: 1)
-                    .padding()
-                
-                Text("當前對比度: \(Int(settings.screenContrast))")
-                    .foregroundColor(.green)
+                List {
+                    Button(action: {
+                        settings.isContrastAdjusting.toggle()
+                    }) {
+                        HStack {
+                            Text("螢幕對比度")
+                                .foregroundColor(.black)
+                            Spacer()
+                            Image(systemName: settings.isContrastAdjusting ? "chevron.down" : "chevron.right")
+                                .foregroundColor(.gray)
+                        }
+                    }
+                    
+                    if settings.isContrastAdjusting {
+                        VStack {
+                            Slider(value: $settings.screenContrast, in: 0...100, step: 1)
+                            Text("當前對比度: \(Int(settings.screenContrast))")
+                                .foregroundColor(.black)
+                        }
+                    }
+                }
+                .listStyle(InsetGroupedListStyle())
             }
             .padding()
         }
