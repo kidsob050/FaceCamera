@@ -81,12 +81,13 @@ struct SettingsView: View {
                     Button(action: {
                         settings.isContrastAdjusting.toggle()
                     }) {
+                        Color.green
                         HStack {
                             Text("螢幕對比度")
-                                .foregroundColor(.black)
+                                .foregroundColor(.purple)
                             Spacer()
                             Image(systemName: settings.isContrastAdjusting ? "chevron.down" : "chevron.right")
-                                .foregroundColor(.gray)
+                                .foregroundColor(.white)
                         }
                     }
                     
@@ -94,11 +95,12 @@ struct SettingsView: View {
                         VStack {
                             Slider(value: $settings.screenContrast, in: 0...100, step: 1)
                             Text("當前對比度: \(Int(settings.screenContrast))")
-                                .foregroundColor(.black)
+                                .foregroundColor(.white)
                         }
                     }
                 }
                 .listStyle(InsetGroupedListStyle())
+                .foregroundColor(.blue)
             }
             .padding()
         }
