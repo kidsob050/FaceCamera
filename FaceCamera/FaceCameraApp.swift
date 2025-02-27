@@ -81,7 +81,6 @@ struct SettingsView: View {
                     Button(action: {
                         settings.isContrastAdjusting.toggle()
                     }) {
-                        Color.green
                         HStack {
                             Text("螢幕對比度")
                                 .foregroundColor(.purple)
@@ -100,7 +99,7 @@ struct SettingsView: View {
                     }
                 }
                 .listStyle(InsetGroupedListStyle())
-                .foregroundColor(.blue)
+                .background(Color.yellow)
             }
             .padding()
         }
