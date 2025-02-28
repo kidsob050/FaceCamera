@@ -99,7 +99,10 @@ struct SettingsView: View {
                     }
                 }
                 .listStyle(InsetGroupedListStyle())
-                .background(Color.yellow)
+                .background(Color.gray)
+                .onAppear {
+                    UITableView.appearance().backgroundColor = UIColor.clear
+                }
             }
             .padding()
         }
