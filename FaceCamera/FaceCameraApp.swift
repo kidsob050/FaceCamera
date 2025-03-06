@@ -11,13 +11,28 @@ import AVFoundation
 import Vision
 import CoreML
 
+//全局設定類,用於管理應用程式的全局狀態
 class GlobalSettings: ObservableObject {
-    @Published var screenContrast: Double = 50
-    @Published var isContrastAdjusting: Bool = false
+    @Published var screenContrast: Double {
+        didSet {
+            DispatchQueue.global(qos: .background).async {
+                UserDefaults.standard.set(self.screenContrast, forKey: "screenContrast") //保存對比度數值
+            }
+        }
+    }
+    @Published var isContrastAdjusting: Bool = false // 控制是否顯示對比度調整的Slider
+    
+    init() {
+        self.screenContrast = UserDefaults.standard.double(forKey: "screenContrast")
+        if self.screenContrast == 0 { //預設為50
+            self.screenContrast = 50
+        }
+    }
 }
 
+//主畫面視圖
 struct MainView: View {
-    @EnvironmentObject var settings: GlobalSettings
+    @EnvironmentObject var settings: GlobalSettings // 獲取全局設定
     
     var body: some View {
         NavigationView {
