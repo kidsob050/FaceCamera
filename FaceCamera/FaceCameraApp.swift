@@ -87,6 +87,9 @@ struct SettingsView: View {
             Color.gray
                 .edgesIgnoringSafeArea(.all)
                 .brightness((settings.screenContrast - 50) / 100)
+            ScrollView {
+                
+            }
             VStack {
                 Text("設定頁面")
                     .font(.largeTitle)
@@ -113,10 +116,11 @@ struct SettingsView: View {
                         }
                     }
                 }
-                .listStyle(InsetGroupedListStyle())
-                .background(Color.gray)
+                .listStyle(PlainListStyle())
+                .background(Color.clear)
                 .onAppear {
-                    UITableView.appearance().backgroundColor = UIColor.clear
+                    UITableView.appearance().backgroundColor = .clear
+                    UITableViewCell.appearance().backgroundColor = .clear
                 }
             }
             .padding()
